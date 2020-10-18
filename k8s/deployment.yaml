@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: twitter-app
+  name: twitter-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: twitter-app
+  template:
+    metadata:
+      labels:
+        app: twitter-app
+    spec:
+      containers:
+      - image: bharatsantani/twitter-app:latest
+        name: twitter-app

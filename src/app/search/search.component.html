@@ -1,0 +1,62 @@
+<form>
+    <div class="row">
+        <div class="col-10">
+            <input #inputtext ngModel #text="ngModel" type="text" name="inputString" [(ngModel)]="searchInput"
+                class="form-control" placeholder="Type to Search for Recent Tweets here" (input)="oninput()"
+                (keyup.enter)="inputtext.blur();search()" maxlength="50">
+        </div>
+        <div class="col-1">
+            <button #searchbtn type="button" class="btn btn-light" (click)="searchbtn.blur();search()"
+                [disabled]="searchInput?.length<1">Search</button>
+        </div>
+        <div class="col-1">
+            <button #clearbtn type="button" class="btn btn-light" (click)="clearbtn.blur();clearSearch()">Clear</button>
+        </div>
+    </div>
+</form>
+
+<ng-container *ngIf="tweetResultsResponse$ | async as tweetResultResponse">
+    <div class="alert alert-danger" *ngIf="tweetResultResponse.error">
+        Something went wrong while fetching search results, please try after some time.
+    </div>
+
+    <div class="row row--padding-top" *ngIf="tweetResultResponse.result?.tweets.length>0 else NoResultsFound">
+        <div class="col-8">
+            <div class="card">
+                <ul class="list-group list-group-flush"
+                    *ngFor="let tweet of tweetResultResponse.result.tweets, let i=index">
+
+                    <li class="list-group-item">
+                        {{i+1}}. {{tweet.text}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Trending HashTags</h5>
+                    <ng-container
+                        *ngFor="let tweetMapEntry of tweetResultResponse.result.countByTrendingsTagNames | keyvalue: asIsOrder; let l = count">
+                        <div>
+                            <span class="badge badge-primary badge-pill">{{tweetMapEntry.value}}</span>
+                            #{{tweetMapEntry.key}}
+                        </div>
+                    </ng-container>
+                    <div *ngIf="isEmpty(tweetResultResponse.result.countByTrendingsTagNames)">
+                        No hashtag Results Found
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ng-template #NoResultsFound>
+        <div class="row row--padding-top">
+            <div class="col-12">
+                No results Found
+            </div>
+        </div>
+    </ng-template>
+</ng-container>
